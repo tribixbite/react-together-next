@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  
+  @media (prefers-color-scheme: dark) {
+    --color-background: #0a0a0a;
+    --color-foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom styles for React Together components */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-highlight {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-highlight:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Custom utilities */
+.text-balance {
+  text-wrap: balance;
+}
