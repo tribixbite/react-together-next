@@ -97,9 +97,6 @@ export default function HomePage() {
             {/* Live Chat Demo */}
             <LiveChatDemo />
             
-            {/* Live Cursor Demo */}
-            <LiveCursorDemo />
-            
             {/* Live Presence Demo */}
             <LivePresenceDemo />
           </div>
@@ -293,68 +290,6 @@ function LiveChatDemo() {
   )
 }
 
-function LiveCursorDemo() {
-  const isTogether = useIsTogether()
-  const myId = useMyId()
-  const { myCursor, allCursors } = useCursors({ omitMyValue: false })
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    })
-  }
-
-  return (
-    <div className="card hover-lift">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-white">Live Cursors</h3>
-        <div className="text-sm text-text-muted">
-          {isTogether ? '🟢 Live' : '🔴 Offline'}
-        </div>
-      </div>
-      
-      <div 
-        className="relative h-32 bg-gradient-surface rounded-lg border border-border overflow-hidden cursor-crosshair"
-        onMouseMove={handleMouseMove}
-      >
-        {/* Local cursor indicator */}
-        <div
-          className="absolute w-3 h-3 bg-primary rounded-full pointer-events-none transition-all duration-100 ease-out"
-          style={{
-            left: mousePos.x - 6,
-            top: mousePos.y - 6,
-            opacity: mousePos.x > 0 ? 1 : 0
-          }}
-        />
-        
-        {/* Other users' cursors */}
-        {Object.entries(allCursors).filter(([id]) => id !== myId).map(([userId, cursor]) => (
-          <div
-            key={userId}
-            className="absolute w-3 h-3 bg-accent rounded-full pointer-events-none"
-            style={{
-              left: (cursor?.percentX || 0) * 100 + '%',
-              top: (cursor?.percentY || 0) * 100 + '%',
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-        ))}
-        
-        <div className="absolute inset-0 flex items-center justify-center text-text-subtle text-sm">
-          Move your mouse here
-        </div>
-      </div>
-      
-      <p className="text-sm text-text-subtle mt-2">
-        Cursors: {Object.keys(allCursors).length} active
-      </p>
-    </div>
-  )
-}
-
 function LivePresenceDemo() {
   const isTogether = useIsTogether()
   const connectedUsers = useConnectedUsers()
@@ -372,12 +307,12 @@ function LivePresenceDemo() {
         <div className="flex items-center space-x-2">
           <Users className="w-5 h-5 text-primary" />
           <span className="text-white font-medium">
-            {connectedUsers.length} user{connectedUsers.length !== 1 ? 's' : ''} online
+            {connectedUsers?.length || 0} user{(connectedUsers?.length || 0) !== 1 ? 's' : ''} online
           </span>
         </div>
         
         <div className="space-y-2">
-          {connectedUsers.slice(0, 3).map((user) => (
+          {connectedUsers?.slice(0, 3).map((user) => (
             <div key={user.userId} className="flex items-center space-x-3">
               <div className="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center text-xs font-semibold text-white">
                 {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
@@ -392,9 +327,9 @@ function LivePresenceDemo() {
               </div>
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             </div>
-          ))}
+          )) || []}
           
-          {connectedUsers.length === 0 && (
+          {(!connectedUsers || connectedUsers.length === 0) && (
             <div className="text-text-subtle text-sm text-center py-4">
               No users connected
             </div>
@@ -439,6 +374,8 @@ function ConnectionStatus() {
     }
   }
 
+  const userCount = connectedUsers?.length || 0
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center space-x-3">
@@ -448,7 +385,7 @@ function ConnectionStatus() {
         </span>
         {isTogether && (
           <span className="text-text-muted">
-            ({connectedUsers.length} user{connectedUsers.length !== 1 ? 's' : ''})
+            ({userCount} user{userCount !== 1 ? 's' : ''})
           </span>
         )}
       </div>

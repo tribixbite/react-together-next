@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { Palette, Users, Zap, Eye, Activity, MessageSquare } from 'lucide-react'
 import { 
   useStateTogether, 
@@ -15,63 +15,93 @@ interface User {
   nickname?: string
 }
 
+// Create context for addActivity function
+const ActivityContext = createContext<((action: string) => void) | null>(null)
+
+// Custom hook to use addActivity
+const useAddActivity = () => {
+  const addActivity = useContext(ActivityContext)
+  return addActivity
+}
+
 export default function CollaborativeShowcase() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero section with live activity */}
-      <section className="relative py-20 px-6 overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="absolute inset-0 gradient-glow"></div>
-        
-        <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="text-center mb-16 fade-in">
-            <h1 className="text-6xl font-bold mb-6">
-              <span className="text-gradient">Collaboration</span>
-              <br />
-              <span className="text-white">In Motion</span>
-            </h1>
-            <p className="text-xl text-text-muted max-w-3xl mx-auto mb-8">
-              Watch real-time collaboration unfold before your eyes. 
-              Every interaction is synchronized instantly across all connected users.
-            </p>
-            <LiveActivityFeed />
-          </div>
+    <ActivityProvider>
+      <div className="min-h-screen bg-background">
+        {/* Hero section with live activity */}
+        <section className="relative py-20 px-6 overflow-hidden">
+          {/* Background effects */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <div className="absolute inset-0 gradient-glow"></div>
+          
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <div className="text-center mb-16 fade-in">
+              <h1 className="text-6xl font-bold mb-6">
+                <span className="text-gradient">Collaboration</span>
+                <br />
+                <span className="text-white">In Motion</span>
+              </h1>
+              <p className="text-xl text-text-muted max-w-3xl mx-auto mb-8">
+                Watch real-time collaboration unfold before your eyes. 
+                Every interaction is synchronized instantly across all connected users.
+              </p>
+              <LiveActivityFeed />
+            </div>
 
-          {/* Interactive showcase grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <CollaborativeCanvas />
-            <LiveReactionBoard />
-            <RealTimeMetrics />
-            <SharedColorPalette />
-            <CollaborativeVoting />
-            <LiveTypingIndicator />
+            {/* Interactive showcase grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <CollaborativeCanvas />
+              <LiveReactionBoard />
+              <LiveCursorDemo />
+              <RealTimeMetrics />
+              <SharedColorPalette />
+              <CollaborativeVoting />
+              <LiveTypingIndicator />
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </ActivityProvider>
   )
 }
 
-function LiveActivityFeed() {
+function ActivityProvider({ children }: { children: React.ReactNode }) {
   const [activities, setActivities] = useStateTogether('activity-feed', [] as any[])
-  const connectedUsers = useConnectedUsers() as User[]
   const myId = useMyId()
 
   const addActivity = (action: string) => {
+    console.log('🔥 Adding activity:', action)
     const activity = {
-      id: Date.now(),
+      id: Date.now() + Math.random(),
       userId: myId,
       action,
       timestamp: Date.now()
     }
-    setActivities((prev: any[]) => [activity, ...prev.slice(0, 4)]) // Keep last 5
+    console.log('🔥 Setting activities:', activities)
+    setActivities((prev: any[]) => {
+      const newActivities = [activity, ...prev.slice(0, 4)]
+      console.log('🔥 New activities array:', newActivities)
+      return newActivities
+    })
   }
 
+  return (
+    <ActivityContext.Provider value={addActivity}>
+      {children}
+    </ActivityContext.Provider>
+  )
+}
+
+function LiveActivityFeed() {
+  const [activities] = useStateTogether('activity-feed', [] as any[])
+  const connectedUsers = useConnectedUsers() as User[]
+
   const getUserNickname = (userId: string) => {
-    const user = connectedUsers.find(u => u.userId === userId)
-    return user?.nickname || user?.userId || userId.slice(0, 8)
+    const user = connectedUsers?.find(u => u.userId === userId)
+    return user?.nickname || userId || 'Unknown'
   }
+
+  console.log('🔥 Current activities:', activities)
 
   return (
     <div className="glass-surface rounded-2xl p-6 max-w-2xl mx-auto mb-12">
@@ -83,7 +113,7 @@ function LiveActivityFeed() {
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-green-400 rounded-full pulse-glow"></div>
           <span className="text-sm text-text-muted">
-            {connectedUsers.length} online
+            {connectedUsers?.length || 0} online
           </span>
         </div>
       </div>
@@ -126,6 +156,7 @@ function CollaborativeCanvas() {
   const isTogether = useIsTogether()
   const [pixels, setPixels] = useStateTogether('canvas-pixels', {} as Record<string, any>)
   const canvasRef = useRef<HTMLDivElement>(null)
+  const addActivity = useAddActivity()
 
   const handlePixelClick = (x: number, y: number) => {
     if (!isTogether) return
@@ -137,6 +168,11 @@ function CollaborativeCanvas() {
       ...prev,
       [pixelKey]: { color, timestamp: Date.now() }
     }))
+
+    // Add activity
+    if (addActivity) {
+      addActivity('painted a pixel')
+    }
   }
 
   return (
@@ -184,6 +220,7 @@ function CollaborativeCanvas() {
 function LiveReactionBoard() {
   const isTogether = useIsTogether()
   const [reactions, setReactions] = useStateTogether('reactions', {} as Record<string, number>)
+  const addActivity = useAddActivity()
 
   const emojis = ['👍', '❤️', '😄', '🎉', '🔥', '✨']
 
@@ -193,6 +230,11 @@ function LiveReactionBoard() {
       ...prev,
       [emoji]: (prev[emoji] || 0) + 1
     }))
+
+    // Add activity
+    if (addActivity) {
+      addActivity(`reacted with ${emoji}`)
+    }
   }
 
   return (
@@ -238,10 +280,84 @@ function LiveReactionBoard() {
   )
 }
 
+function LiveCursorDemo() {
+  const isTogether = useIsTogether()
+  const [myCursorPos, setMyCursorPos] = useStateTogether('my-cursor-pos', { x: 0, y: 0 })
+  const [allCursorPositions, setAllCursorPositions] = useStateTogether('all-cursor-positions', {} as Record<string, { x: number, y: number }>)
+  const myId = useMyId()
+  const demoRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!demoRef.current || !myId) return
+    const rect = demoRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    
+    setMyCursorPos({ x, y })
+    setAllCursorPositions(prev => ({
+      ...prev,
+      [myId]: { x, y }
+    }))
+  }
+
+  const handleMouseLeave = () => {
+    if (!myId) return
+    setAllCursorPositions(prev => {
+      const updated = { ...prev }
+      delete updated[myId]
+      return updated
+    })
+  }
+
+  return (
+    <div className="card hover-lift">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <Eye className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold text-white">Live Cursors</h3>
+        </div>
+        <div className="text-sm text-text-muted">
+          {isTogether ? '🟢 Live' : '🔴 Offline'}
+        </div>
+      </div>
+      
+      <div 
+        ref={demoRef}
+        className='relative w-full h-32 overflow-hidden bg-surface rounded-lg border border-border cursor-crosshair'
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Other users' cursors */}
+        {Object.entries(allCursorPositions).map(([userId, pos]) => {
+          if (userId === myId) return null
+          return (
+            <div
+              key={userId}
+              className='absolute w-2 h-2 rounded-full bg-emerald-500'
+              style={{
+                left: `${pos.x}%`,
+                top: `${pos.y}%`,
+                transform: 'translate(-50%, -50%)',
+                transition: 'all 0.1s ease-out',
+              }}
+            />
+          )
+        })}
+        
+        {/* Center text */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <p className='text-center px-4 text-text-muted text-sm'>
+            Move your cursor here to see live tracking
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function RealTimeMetrics() {
   const isTogether = useIsTogether()
   const connectedUsers = useConnectedUsers()
-  const { allCursors } = useCursors()
   
   const [startTime] = useState(Date.now())
   const [sessionTime, setSessionTime] = useState(0)
@@ -259,6 +375,8 @@ function RealTimeMetrics() {
     return `${minutes}:${(seconds % 60).toString().padStart(2, '0')}`
   }
 
+  const userCount = connectedUsers?.length || 0
+
   return (
     <div className="card hover-lift">
       <div className="flex items-center justify-between mb-4">
@@ -275,14 +393,7 @@ function RealTimeMetrics() {
         <div className="flex justify-between items-center">
           <span className="text-text-muted">Connected Users</span>
           <span className="text-2xl font-bold text-primary">
-            {connectedUsers.length}
-          </span>
-        </div>
-        
-        <div className="flex justify-between items-center">
-          <span className="text-text-muted">Active Cursors</span>
-          <span className="text-2xl font-bold text-accent">
-            {Object.keys(allCursors).length}
+            {userCount}
           </span>
         </div>
         
@@ -363,6 +474,7 @@ function CollaborativeVoting() {
   const myId = useMyId()
   const [votes, setVotes] = useStateTogether('votes', {} as Record<string, number>)
   const [userVotes, setUserVotes] = useStateTogether('user-votes', {} as Record<string, string>)
+  const addActivity = useAddActivity()
 
   const options = [
     { id: 'pizza', emoji: '🍕', label: 'Pizza' },
@@ -393,6 +505,12 @@ function CollaborativeVoting() {
       ...prev,
       [myId]: optionId
     }))
+
+    // Add activity
+    const option = options.find(opt => opt.id === optionId)
+    if (addActivity && option) {
+      addActivity(`voted for ${option.emoji} ${option.label}`)
+    }
   }
 
   const totalVotes = Object.values(votes).reduce((sum: number, count: any) => sum + count, 0)
@@ -497,8 +615,8 @@ function LiveTypingIndicator() {
   }
 
   const getUserNickname = (userId: string) => {
-    const user = connectedUsers.find(u => u.userId === userId)
-    return user?.nickname || user?.userId || userId.slice(0, 8)
+    const user = connectedUsers?.find(u => u.userId === userId)
+    return user?.nickname || userId || 'Unknown'
   }
 
   const getTypingUsers = () => {

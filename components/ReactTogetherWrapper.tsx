@@ -66,15 +66,18 @@ function ConnectedUsersDisplay() {
   return (
     <div className="flex items-center space-x-3">
       <div className="flex -space-x-2">
-        {connectedUsers.slice(0, 3).map((user) => (
-          <div
-            key={user.userId}
-            className="w-8 h-8 rounded-full bg-gradient-primary ring-2 ring-background flex items-center justify-center text-xs font-semibold text-white"
-            title={user.nickname || user.userId}
-          >
-            {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
-          </div>
-        ))}
+        {connectedUsers.slice(0, 3).map((user) => {
+          const displayName = user.nickname || user.userId || 'U'
+          return (
+            <div
+              key={user.userId}
+              className="w-8 h-8 rounded-full bg-gradient-primary ring-2 ring-background flex items-center justify-center text-xs font-semibold text-white"
+              title={user.nickname || user.userId}
+            >
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+          )
+        })}
         {connectedUsers.length > 3 && (
           <div className="w-8 h-8 rounded-full bg-surface ring-2 ring-background flex items-center justify-center text-xs text-text-muted">
             +{connectedUsers.length - 3}
