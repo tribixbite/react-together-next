@@ -1,38 +1,39 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, FileText, Save, RotateCcw } from 'lucide-react'
+import { ArrowLeft, FileText, Save, RotateCcw, BarChart3, Users } from 'lucide-react'
 import { useCallback } from 'react'
+import {
+  useStateTogether,
+  useStateTogetherWithPerUserValues,
+  useFunctionTogether,
+  useConnectedUsers,
+  useMyId,
+  useIsTogether
+} from 'react-together'
 
 export default function EditorPage() {
-  const { 
-    useStateTogether, 
-    useStateTogetherWithPerUserValues,
-    useFunctionTogether,
-    useConnectedUsers,
-    useMyId,
-    useIsTogether 
-  } = require('react-together')
-  
+
+
   const isTogether = useIsTogether()
   const myId = useMyId()
   const connectedUsers = useConnectedUsers()
 
   // Shared document content
-  const [documentContent, setDocumentContent] = useStateTogether('document-content', 
+  const [documentContent, setDocumentContent] = useStateTogether('document-content',
     '# Welcome to Collaborative Editing!\n\nThis is a shared document that multiple users can edit simultaneously.\n\n## Features:\n- Real-time synchronization\n- Per-user cursors\n- Change history\n- Auto-save\n\nStart typing below to see the magic happen! ✨\n\n'
   )
-  
+
   // Per-user cursor positions
-  const [myCursorPosition, setMyCursorPosition, allCursorPositions] = 
+  const [myCursorPosition, setMyCursorPosition, allCursorPositions] =
     useStateTogetherWithPerUserValues('cursor-positions', 0)
-  
+
   // Document metadata
   const [lastSaved, setLastSaved] = useStateTogether('last-saved', Date.now())
   const [documentTitle, setDocumentTitle] = useStateTogether('document-title', 'Untitled Document')
-  
+
   // Activity feed
-  const [activityFeed, setActivityFeed] = useStateTogether('activity-feed', [])
+  const [activityFeed, setActivityFeed] = useStateTogether('activity-feed', [] as any[])
 
   // Add activity function
   const addActivity = useFunctionTogether('add-activity', useCallback((activity: any) => {
@@ -56,10 +57,10 @@ export default function EditorPage() {
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value
     const cursorPos = e.target.selectionStart
-    
+
     setDocumentContent(newContent)
     setMyCursorPosition(cursorPos)
-    
+
     // Add activity
     const user = connectedUsers.find(u => u.userId === myId)
     addActivity({
@@ -72,6 +73,10 @@ export default function EditorPage() {
   }
 
   const handleCursorChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMyCursorPosition(e.target.selectionStart)
+  }
+
+  const handleCursorPosition = (e: any) => {
     setMyCursorPosition(e.target.selectionStart)
   }
 
@@ -103,7 +108,7 @@ export default function EditorPage() {
 
   const getUserNickname = (userId: string) => {
     const user = connectedUsers.find(u => u.userId === userId)
-    return user?.nickname || userId
+    return user?.nickname || user?.userId || userId
   }
 
   const formatTime = (timestamp: number) => {
@@ -115,8 +120,8 @@ export default function EditorPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-8">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center text-blue-600 hover:text-blue-700 mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -173,21 +178,21 @@ export default function EditorPage() {
                 <textarea
                   value={documentContent}
                   onChange={handleContentChange}
-                  onSelect={handleCursorChange}
-                  onClick={handleCursorChange}
-                  onKeyUp={handleCursorChange}
+                  onSelect={handleCursorPosition}
+                  onClick={handleCursorPosition}
+                  onKeyUp={handleCursorPosition}
                   className="w-full h-96 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Start typing your collaborative document..."
                   style={{ fontFamily: 'monospace', fontSize: '14px', lineHeight: '1.5' }}
                 />
-                
+
                 {/* Cursor indicators */}
                 <div className="absolute top-4 right-4 space-y-1">
                   {Object.entries(allCursorPositions).map(([userId, position]) => {
                     if (userId === myId) return null
                     const user = connectedUsers.find(u => u.userId === userId)
                     if (!user) return null
-                    
+
                     return (
                       <div
                         key={userId}
@@ -230,11 +235,11 @@ export default function EditorPage() {
                   return (
                     <div key={user.userId} className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                        {user.nickname.charAt(0).toUpperCase()}
+                        {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                          {user.nickname}
+                          {user.nickname || user.userId}
                           {user.isYou && <span className="text-blue-600 ml-1">(You)</span>}
                         </p>
                         <p className="text-xs text-gray-500">Cursor at {cursorPos}</p>
@@ -256,11 +261,10 @@ export default function EditorPage() {
                   activityFeed.map((activity: any) => (
                     <div key={activity.id} className="text-sm">
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          activity.action === 'edited' ? 'bg-blue-500' :
+                        <div className={`w-2 h-2 rounded-full ${activity.action === 'edited' ? 'bg-blue-500' :
                           activity.action === 'saved' ? 'bg-green-500' :
-                          'bg-gray-500'
-                        }`}></div>
+                            'bg-gray-500'
+                          }`}></div>
                         <span className="font-medium text-gray-900">{activity.userName}</span>
                         <span className="text-gray-600">{activity.action} the document</span>
                       </div>

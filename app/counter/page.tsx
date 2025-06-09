@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { ArrowLeft, BarChart3, Plus, Minus, RotateCcw } from 'lucide-react'
+import { useStateTogether, useIsTogether } from 'react-together'
 
 export default function CounterPage() {
-  const { useStateTogether, useIsTogether } = require('react-together')
   const isTogether = useIsTogether()
   
   const [count, setCount] = useStateTogether('shared-counter', 0)
@@ -119,7 +119,6 @@ export default function CounterPage() {
 }
 
 function MultipleCountersDemo() {
-  const { useStateTogether } = require('react-together')
   const [counter1, setCounter1] = useStateTogether('counter-1', 0)
   const [counter2, setCounter2] = useStateTogether('counter-2', 0)
   const [counter3, setCounter3] = useStateTogether('counter-3', 0)

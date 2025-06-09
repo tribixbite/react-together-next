@@ -1,217 +1,467 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
-  MessageSquare, 
-  MousePointer, 
+  useStateTogether, 
+  useChat, 
+  useCursors, 
+  useConnectedUsers, 
+  useMyId, 
+  useIsTogether, 
+  useJoinUrl 
+} from 'react-together'
+import { 
+  Zap, 
   Users, 
-  BarChart3, 
-  Gamepad2, 
-  FileText,
+  MousePointer, 
+  MessageSquare, 
+  Sparkles,
   ArrowRight,
   Github,
-  ExternalLink
+  ExternalLink,
+  Play,
+  Pause,
+  RotateCcw
 } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="px-4 py-8">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to React Together
-        </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-          Build collaborative, real-time applications with ease. This Next.js starter template 
-          showcases the power of React Together for creating synchronized multi-user experiences.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <a
-            href="https://react-together.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Documentation
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </a>
-          <a
-            href="https://github.com/multisynq/react-together"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-          >
-            <Github className="mr-2 h-4 w-4" />
-            GitHub
-          </a>
-        </div>
-      </div>
+      <section className="relative py-20 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center space-y-8 fade-in">
+            <div className="space-y-4">
+              <h1 className="text-6xl font-bold">
+                <span className="text-gradient">Real-time</span>
+                <br />
+                <span className="text-white">Collaboration</span>
+              </h1>
+              <p className="text-xl text-text-muted max-w-2xl mx-auto">
+                Build synchronized multi-user experiences with React Together. 
+                Watch live collaboration unfold in real-time.
+              </p>
+            </div>
 
-      {/* Quick Start */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">🚀 Quick Start</h2>
-        <div className="space-y-4">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              1
-            </div>
-            <div>
-              <p className="text-gray-900 font-medium">Get your API key</p>
-              <p className="text-gray-600">
-                Visit <a href="https://multisynq.io/coder" className="text-blue-600 hover:underline">multisynq.io/coder</a> to sign up for free
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              2
-            </div>
-            <div>
-              <p className="text-gray-900 font-medium">Share your session</p>
-              <p className="text-gray-600">
-                Click the "Session" button in the header to get a shareable link
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              3
-            </div>
-            <div>
-              <p className="text-gray-900 font-medium">Explore the examples</p>
-              <p className="text-gray-600">
-                Try the demo pages below with multiple browser tabs or invite friends!
-              </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="https://react-together.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary inline-flex items-center space-x-2 hover-glow"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Documentation</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+              
+              <Link
+                href="/showcase"
+                className="btn-secondary inline-flex items-center space-x-2 hover-lift"
+              >
+                <Zap className="w-4 h-4" />
+                <span>Full Showcase</span>
+              </Link>
+              
+              <a
+                href="https://github.com/multisynq/react-together"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary inline-flex items-center space-x-2"
+              >
+                <Github className="w-4 h-4" />
+                <span>GitHub</span>
+              </a>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Feature Examples Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        <FeatureCard
-          icon={<MessageSquare className="h-8 w-8" />}
-          title="Real-time Chat"
-          description="Built-in chat component with synchronized messages across all users"
-          href="/chat"
-          color="bg-green-500"
-        />
-        <FeatureCard
-          icon={<MousePointer className="h-8 w-8" />}
-          title="Live Cursors"
-          description="See everyone's cursor movements in real-time with smooth animations"
-          href="/cursors"
-          color="bg-purple-500"
-        />
-        <FeatureCard
-          icon={<BarChart3 className="h-8 w-8" />}
-          title="Shared Counter"
-          description="Synchronized state that updates instantly for all connected users"
-          href="/counter"
-          color="bg-blue-500"
-        />
-        <FeatureCard
-          icon={<Users className="h-8 w-8" />}
-          title="User Presence"
-          description="Track who's online and see hover interactions across users"
-          href="/presence"
-          color="bg-orange-500"
-        />
-        <FeatureCard
-          icon={<Gamepad2 className="h-8 w-8" />}
-          title="Interactive Game"
-          description="Simple collaborative game demonstrating synchronized actions"
-          href="/game"
-          color="bg-red-500"
-        />
-        <FeatureCard
-          icon={<FileText className="h-8 w-8" />}
-          title="Collaborative Text"
-          description="Shared text editor with real-time collaboration features"
-          href="/editor"
-          color="bg-indigo-500"
-        />
-      </div>
+      {/* Live Demo Section */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gradient mb-4">
+              See It In Action
+            </h2>
+            <p className="text-text-muted text-lg">
+              Try these live demos with multiple browser tabs or share your session URL
+            </p>
+          </div>
 
-      {/* Connection Status */}
-      <ConnectionStatus />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Live Counter Demo */}
+            <LiveCounterDemo />
+            
+            {/* Live Chat Demo */}
+            <LiveChatDemo />
+            
+            {/* Live Cursor Demo */}
+            <LiveCursorDemo />
+            
+            {/* Live Presence Demo */}
+            <LivePresenceDemo />
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Built for Modern Apps
+            </h2>
+            <p className="text-text-muted text-lg">
+              Everything you need for real-time collaboration
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <FeatureCard
+              icon={<Zap className="w-6 h-6" />}
+              title="Instant Sync"
+              description="Changes appear instantly across all connected users with automatic conflict resolution."
+            />
+            <FeatureCard
+              icon={<Users className="w-6 h-6" />}
+              title="User Presence"
+              description="Track who's online, see live cursors, and manage user interactions seamlessly."
+            />
+            <FeatureCard
+              icon={<MousePointer className="w-6 h-6" />}
+              title="Live Cursors"
+              description="Real-time cursor tracking with smooth animations and user identification."
+            />
+            <FeatureCard
+              icon={<MessageSquare className="w-6 h-6" />}
+              title="Built-in Chat"
+              description="Ready-to-use chat components with message history and user management."
+            />
+            <FeatureCard
+              icon={<Sparkles className="w-6 h-6" />}
+              title="Easy Setup"
+              description="Simple hooks and components that work out of the box with minimal configuration."
+            />
+            <FeatureCard
+              icon={<ArrowRight className="w-6 h-6" />}
+              title="Production Ready"
+              description="Battle-tested patterns with TypeScript support and comprehensive documentation."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <div className="glass-surface rounded-3xl p-12 text-center space-y-6">
+            <h2 className="text-4xl font-bold text-gradient">
+              Start Building Together
+            </h2>
+            <p className="text-text-muted text-lg max-w-2xl mx-auto">
+              Open multiple browser tabs to see real-time collaboration in action, 
+              or share your session URL with others to collaborate live.
+            </p>
+            <div className="flex justify-center">
+              <ConnectionStatus />
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
 
-interface FeatureCardProps {
+function LiveCounterDemo() {
+  const isTogether = useIsTogether()
+  const [count, setCount] = useStateTogether('demo-counter', 0)
+
+  return (
+    <div className="card hover-lift">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold text-white">Live Counter</h3>
+        <div className="text-sm text-text-muted">
+          {isTogether ? '🟢 Live' : '🔴 Offline'}
+        </div>
+      </div>
+      
+      <div className="text-center space-y-6">
+        <div className="text-5xl font-bold text-gradient">
+          {count}
+        </div>
+        
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => setCount(count - 1)}
+            disabled={!isTogether}
+            className="btn-secondary w-12 h-12 rounded-full flex items-center justify-center"
+          >
+            -
+          </button>
+          <button
+            onClick={() => setCount(0)}
+            disabled={!isTogether}
+            className="btn-secondary px-4 py-2 rounded-lg"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setCount(count + 1)}
+            disabled={!isTogether}
+            className="btn-primary w-12 h-12 rounded-full flex items-center justify-center glow-primary"
+          >
+            +
+          </button>
+        </div>
+        
+        <p className="text-sm text-text-subtle">
+          Try clicking from multiple tabs!
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function LiveChatDemo() {
+  const isTogether = useIsTogether()
+  const myId = useMyId()
+  const { messages, sendMessage } = useChat('demo-chat')
+  const [message, setMessage] = useState('')
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (message.trim() && isTogether) {
+      sendMessage(message.trim())
+      setMessage('')
+    }
+  }
+
+  return (
+    <div className="card hover-lift">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold text-white">Live Chat</h3>
+        <div className="text-sm text-text-muted">
+          {isTogether ? '🟢 Live' : '🔴 Offline'}
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="h-32 bg-surface rounded-lg p-3 overflow-y-auto space-y-2">
+          {messages.slice(-3).map((msg) => (
+            <div
+              key={msg.id}
+              className={`text-sm p-2 rounded-lg ${
+                msg.senderId === myId 
+                  ? 'bg-primary text-white ml-4' 
+                  : 'bg-surface-hover text-text mr-4'
+              }`}
+            >
+              <div className="font-medium text-xs opacity-75 mb-1">
+                {msg.senderId === myId ? 'You' : msg.senderId.slice(0, 8)}
+              </div>
+              {msg.message}
+            </div>
+          ))}
+          {messages.length === 0 && (
+            <div className="text-text-subtle text-center text-sm">
+              No messages yet
+            </div>
+          )}
+        </div>
+        
+        <form onSubmit={handleSend} className="flex space-x-2">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
+            disabled={!isTogether}
+            className="input flex-1 text-sm"
+          />
+          <button
+            type="submit"
+            disabled={!isTogether || !message.trim()}
+            className="btn-primary px-4 py-2"
+          >
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function LiveCursorDemo() {
+  const isTogether = useIsTogether()
+  const myId = useMyId()
+  const { myCursor, allCursors } = useCursors({ omitMyValue: false })
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+  }
+
+  return (
+    <div className="card hover-lift">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold text-white">Live Cursors</h3>
+        <div className="text-sm text-text-muted">
+          {isTogether ? '🟢 Live' : '🔴 Offline'}
+        </div>
+      </div>
+      
+      <div 
+        className="relative h-32 bg-gradient-surface rounded-lg border border-border overflow-hidden cursor-crosshair"
+        onMouseMove={handleMouseMove}
+      >
+        {/* Local cursor indicator */}
+        <div
+          className="absolute w-3 h-3 bg-primary rounded-full pointer-events-none transition-all duration-100 ease-out"
+          style={{
+            left: mousePos.x - 6,
+            top: mousePos.y - 6,
+            opacity: mousePos.x > 0 ? 1 : 0
+          }}
+        />
+        
+        {/* Other users' cursors */}
+        {Object.entries(allCursors).filter(([id]) => id !== myId).map(([userId, cursor]) => (
+          <div
+            key={userId}
+            className="absolute w-3 h-3 bg-accent rounded-full pointer-events-none"
+            style={{
+              left: (cursor?.percentX || 0) * 100 + '%',
+              top: (cursor?.percentY || 0) * 100 + '%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        ))}
+        
+        <div className="absolute inset-0 flex items-center justify-center text-text-subtle text-sm">
+          Move your mouse here
+        </div>
+      </div>
+      
+      <p className="text-sm text-text-subtle mt-2">
+        Cursors: {Object.keys(allCursors).length} active
+      </p>
+    </div>
+  )
+}
+
+function LivePresenceDemo() {
+  const isTogether = useIsTogether()
+  const connectedUsers = useConnectedUsers()
+
+  return (
+    <div className="card hover-lift">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold text-white">User Presence</h3>
+        <div className="text-sm text-text-muted">
+          {isTogether ? '🟢 Live' : '🔴 Offline'}
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Users className="w-5 h-5 text-primary" />
+          <span className="text-white font-medium">
+            {connectedUsers.length} user{connectedUsers.length !== 1 ? 's' : ''} online
+          </span>
+        </div>
+        
+        <div className="space-y-2">
+          {connectedUsers.slice(0, 3).map((user) => (
+            <div key={user.userId} className="flex items-center space-x-3">
+              <div className="w-6 h-6 rounded-full bg-gradient-primary flex items-center justify-center text-xs font-semibold text-white">
+                {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <div className="text-sm text-white">
+                  {user.nickname || user.userId}
+                  {user.isYou && (
+                    <span className="text-primary ml-2">(You)</span>
+                  )}
+                </div>
+              </div>
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
+          ))}
+          
+          {connectedUsers.length === 0 && (
+            <div className="text-text-subtle text-sm text-center py-4">
+              No users connected
+            </div>
+          )}
+        </div>
+        
+        <p className="text-sm text-text-subtle">
+          Open multiple tabs to see more users
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, description }: {
   icon: React.ReactNode
   title: string
   description: string
-  href: string
-  color: string
-}
-
-function FeatureCard({ icon, title, description, href, color }: FeatureCardProps) {
+}) {
   return (
-    <Link href={href} className="group">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-        <div className={`${color} text-white rounded-lg p-3 w-fit mb-4 group-hover:scale-110 transition-transform duration-200`}>
-          {icon}
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600 mb-4">{description}</p>
-        <div className="flex items-center text-blue-600 group-hover:text-blue-700">
-          <span className="text-sm font-medium">Try it out</span>
-          <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-        </div>
+    <div className="card text-center space-y-4">
+      <div className="w-12 h-12 mx-auto rounded-xl gradient-primary flex items-center justify-center text-white">
+        {icon}
       </div>
-    </Link>
+      <h3 className="text-xl font-semibold text-white">{title}</h3>
+      <p className="text-text-muted">{description}</p>
+    </div>
   )
 }
 
 function ConnectionStatus() {
-  const { useIsTogether, useConnectedUsers, useJoinUrl } = require('react-together')
   const isTogether = useIsTogether()
-  const connectedUsers = useConnectedUsers()
   const joinUrl = useJoinUrl()
+  const connectedUsers = useConnectedUsers()
+  const [copied, setCopied] = useState(false)
+
+  const copyJoinUrl = async () => {
+    if (joinUrl) {
+      await navigator.clipboard.writeText(joinUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Connection Status</h2>
-      <div className="space-y-3">
-        <div className="flex items-center space-x-3">
-          <div className={`w-3 h-3 rounded-full ${isTogether ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-gray-900">
-            {isTogether ? 'Connected to session' : 'Not connected'}
-          </span>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-center space-x-3">
+        <div className={`w-3 h-3 rounded-full ${isTogether ? 'bg-green-400 pulse-glow' : 'bg-red-400'}`}></div>
+        <span className="text-white font-medium">
+          {isTogether ? 'Connected' : 'Not Connected'}
+        </span>
         {isTogether && (
-          <>
-            <div className="flex items-center space-x-3">
-              <Users className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-900">
-                {connectedUsers.length} user{connectedUsers.length !== 1 ? 's' : ''} online
-              </span>
-            </div>
-            {joinUrl && (
-              <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                <p className="text-sm text-gray-600 mb-2">Share this URL to invite others:</p>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={joinUrl}
-                    readOnly
-                    className="flex-1 px-2 py-1 text-xs border rounded bg-white"
-                  />
-                  <button
-                    onClick={() => navigator.clipboard.writeText(joinUrl)}
-                    className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
+          <span className="text-text-muted">
+            ({connectedUsers.length} user{connectedUsers.length !== 1 ? 's' : ''})
+          </span>
         )}
       </div>
+      
+      {isTogether && joinUrl && (
+        <button
+          onClick={copyJoinUrl}
+          className="btn-secondary inline-flex items-center space-x-2"
+        >
+          <span>{copied ? 'Copied!' : 'Copy invite link'}</span>
+          <ExternalLink className="w-4 h-4" />
+        </button>
+      )}
     </div>
   )
 }

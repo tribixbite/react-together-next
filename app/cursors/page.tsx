@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { ArrowLeft, MousePointer } from 'lucide-react'
+import { useIsTogether, useCursors, useConnectedUsers, Cursors } from 'react-together'
 
 export default function CursorsPage() {
-  const { Cursors, useCursors, useConnectedUsers, useIsTogether } = require('react-together')
   const isTogether = useIsTogether()
   const { myCursor, allCursors } = useCursors({ omitMyValue: false })
   const connectedUsers = useConnectedUsers()
@@ -25,7 +25,7 @@ export default function CursorsPage() {
 
   return (
     <div className="px-4 py-8 min-h-screen">
-      <Cursors options={{ omitMyValue: false }} />
+      <Cursors omitMyValue={false} />
       
       <div className="max-w-4xl mx-auto">
         {/* Header */}

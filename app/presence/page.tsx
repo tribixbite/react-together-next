@@ -2,18 +2,19 @@
 
 import Link from 'next/link'
 import { ArrowLeft, Users, Eye } from 'lucide-react'
+import { useIsTogether, useConnectedUsers, useNicknames, useHoveringUsers, HoverHighlighter } from 'react-together'
+
+interface ConnectedUser {
+  userId: string
+  nickname: string
+  isYou?: boolean
+}
 
 export default function PresencePage() {
-  const { 
-    useConnectedUsers, 
-    useNicknames, 
-    useHoveringUsers, 
-    HoverHighlighter,
-    useIsTogether 
-  } = require('react-together')
+
   
   const isTogether = useIsTogether()
-  const connectedUsers = useConnectedUsers()
+  const connectedUsers = useConnectedUsers() as ConnectedUser[]
   const [myNickname, setMyNickname, allNicknames] = useNicknames()
 
   if (!isTogether) {
@@ -107,9 +108,23 @@ export default function PresencePage() {
   )
 }
 
-function UserCard({ user }: { user: any }) {
-  const { utils } = require('react-together')
-  const userColor = utils?.getUserColor ? utils.getUserColor(user.userId) : '#6b7280'
+function UserCard({ user }: { user: ConnectedUser }) {
+  // Simple color generation based on userId for consistent coloring
+  const getUserColor = (id: string): string => {
+    const colors = [
+      '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
+      '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
+      '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
+      '#ec4899', '#f43f5e'
+    ]
+    let hash = 0
+    for (let i = 0; i < id.length; i++) {
+      hash = id.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return colors[Math.abs(hash) % colors.length]
+  }
+
+  const userColor = getUserColor(user.userId)
   
   return (
     <div className="border border-gray-200 rounded-lg p-4">
@@ -118,11 +133,11 @@ function UserCard({ user }: { user: any }) {
           className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold"
           style={{ backgroundColor: userColor }}
         >
-          {user.nickname.charAt(0).toUpperCase()}
+          {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {user.nickname}
+            {user.nickname || user.userId}
             {user.isYou && <span className="text-blue-600 ml-1">(You)</span>}
           </p>
           <p className="text-xs text-gray-500 truncate">ID: {user.userId}</p>
@@ -137,7 +152,6 @@ function UserCard({ user }: { user: any }) {
 }
 
 function HoverInteractionDemo() {
-  const { useHoveringUsers, useNicknames } = require('react-together')
   const [hoverRef, hoveringUserIds, iAmHovering] = useHoveringUsers('demo-hover-area')
   const [, , allNicknames] = useNicknames()
 
@@ -193,7 +207,6 @@ function HoverInteractionDemo() {
 }
 
 function HoverableCard({ title, rtKey, color }: { title: string, rtKey: string, color: string }) {
-  const { HoverHighlighter, useHoveringUsers, useNicknames } = require('react-together')
   const [, hoveringUserIds] = useHoveringUsers(rtKey)
   const [, , allNicknames] = useNicknames()
 

@@ -1,17 +1,12 @@
 'use client'
 
+import { useConnectedUsers, useJoinUrl, useMyId, useIsTogether } from "react-together"
+
 interface ConnectionStatusProps {
   className?: string
 }
 
 export function ConnectionStatus({ className = '' }: ConnectionStatusProps) {
-  const { 
-    useIsTogether, 
-    useConnectedUsers, 
-    useJoinUrl,
-    useMyId 
-  } = require('react-together')
-  
   const isTogether = useIsTogether()
   const connectedUsers = useConnectedUsers()
   const joinUrl = useJoinUrl()

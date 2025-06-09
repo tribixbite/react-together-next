@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { ArrowLeft, MessageSquare } from 'lucide-react'
+import { useIsTogether, Chat } from 'react-together'
 
 export default function ChatPage() {
-  const { Chat, useIsTogether } = require('react-together')
   const isTogether = useIsTogether()
 
   if (!isTogether) {
@@ -80,11 +80,10 @@ export default function ChatPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Chat */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm">
+            <div className="bg-white rounded-lg shadow-sm h-96">
               <Chat 
                 rtKey="demo-chat"
                 chatName="Demo Chat Room"
-                className="h-96"
               />
             </div>
           </div>

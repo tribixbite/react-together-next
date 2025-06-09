@@ -1,13 +1,15 @@
 'use client'
 
 import './globals.css'
-import { ReactTogether } from 'react-together'
-import { useState } from 'react'
-import { Users, Settings } from 'lucide-react'
+import { ReactTogether, useConnectedUsers, useIsTogether, useJoinUrl, useLeaveSession, useNicknames } from 'react-together'
+import { useState, useEffect } from 'react'
+import { Users, Settings, Sparkles, LogOut } from 'lucide-react'
+import { ConnectedUser } from 'react-together/dist/hooks/useConnectedUsers'
 
 interface RootLayoutProps {
   children: React.ReactNode
 }
+
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const [sessionParams, setSessionParams] = useState({
@@ -17,26 +19,29 @@ export default function RootLayout({ children }: RootLayoutProps) {
     password: process.env.NEXT_PUBLIC_DEFAULT_SESSION_PASSWORD || 'demo123'
   })
 
-  const [showApiKeyPrompt, setShowApiKeyPrompt] = useState(
-    !process.env.NEXT_PUBLIC_MULTISYNQ_API_KEY || process.env.NEXT_PUBLIC_MULTISYNQ_API_KEY === 'YOUR_API_KEY_HERE'
-  )
+  const [username, setUsername] = useState('')
+  const [showUsernamePrompt, setShowUsernamePrompt] = useState(true)
 
-  const handleApiKeySubmit = (apiKey: string) => {
-    setSessionParams(prev => ({ ...prev, apiKey }))
-    setShowApiKeyPrompt(false)
+  const handleUsernameSubmit = (name: string) => {
+    setUsername(name)
+    setShowUsernamePrompt(false)
   }
 
-  if (showApiKeyPrompt) {
+  if (showUsernamePrompt) {
     return (
       <html lang="en">
         <head>
           <title>Next.js + React Together</title>
           <meta name="description" content="Next.js starter template with React Together" />
-          <script src="https://cdn.tailwindcss.com/4.0.0-alpha.27/tailwindcss.js"></script>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <ApiKeyPrompt onSubmit={handleApiKeySubmit} />
+          <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            <div className="gradient-glow absolute inset-0"></div>
+            <UsernamePrompt onSubmit={handleUsernameSubmit} />
           </div>
         </body>
       </html>
@@ -48,31 +53,49 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head>
         <title>Next.js + React Together</title>
         <meta name="description" content="Next.js starter template with React Together" />
-        <script src="https://cdn.tailwindcss.com/4.0.0-alpha.27/tailwindcss.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
         <ReactTogether
           sessionParams={sessionParams}
           rememberUsers={true}
         >
-          <div className="min-h-screen bg-gray-50">
-            <header className="bg-white shadow-sm border-b">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
+          <div className="min-h-screen bg-background">
+            {/* Background effects */}
+            <div className="gradient-glow absolute inset-0 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
+
+            {/* Navigation */}
+            <nav className="relative z-10 glass border-b border-border">
+              <div className="container mx-auto px-6 py-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <Users className="h-8 w-8 text-blue-600" />
-                    <h1 className="text-xl font-semibold text-gray-900">
-                      Next.js + React Together
-                    </h1>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h1 className="text-xl font-bold text-gradient">
+                          React Together
+                        </h1>
+                        <p className="text-xs text-text-subtle">Real-time Collaboration</p>
+                      </div>
+                    </div>
                   </div>
+
                   <div className="flex items-center space-x-4">
                     <ConnectedUsersDisplay />
-                    <SessionControls />
+                    <SessionControls username={username} />
                   </div>
                 </div>
               </div>
-            </header>
-            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            </nav>
+
+            {/* Main content */}
+            <main className="relative z-10">
               {children}
             </main>
           </div>
@@ -82,58 +105,55 @@ export default function RootLayout({ children }: RootLayoutProps) {
   )
 }
 
-function ApiKeyPrompt({ onSubmit }: { onSubmit: (apiKey: string) => void }) {
-  const [apiKey, setApiKey] = useState('')
+function UsernamePrompt({ onSubmit }: { onSubmit: (name: string) => void }) {
+  const [name, setName] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (apiKey.trim()) {
-      onSubmit(apiKey.trim())
+    if (name.trim()) {
+      onSubmit(name.trim())
     }
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-      <div className="text-center mb-6">
-        <Users className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900">Welcome to React Together!</h2>
-        <p className="text-gray-600 mt-2">
-          Please enter your MultiSynq API key to get started.
+    <div className="glass-surface rounded-2xl p-8 max-w-md w-full relative scale-in">
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-primary flex items-center justify-center float">
+          <Sparkles className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold text-gradient mb-2">Welcome</h2>
+        <p className="text-text-muted">
+          Enter your username to start collaborating
         </p>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700">
-            API Key
+          <label htmlFor="username" className="block text-sm font-medium text-text mb-3">
+            Username
           </label>
           <input
             type="text"
-            id="apiKey"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter your MultiSynq API key"
+            id="username"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="input w-full focus-ring"
+            placeholder="Enter your username"
             required
           />
         </div>
+
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="btn-primary w-full hover-glow"
         >
-          Connect
+          Connect & Collaborate
         </button>
       </form>
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
-          Don't have an API key?{' '}
-          <a
-            href="https://multisynq.io/coder"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-500"
-          >
-            Sign up for free
-          </a>
+
+      <div className="mt-6 text-center">
+        <p className="text-sm text-text-subtle">
+          Choose any name you like - this will be visible to other users in the session
         </p>
       </div>
     </div>
@@ -141,16 +161,104 @@ function ApiKeyPrompt({ onSubmit }: { onSubmit: (apiKey: string) => void }) {
 }
 
 function ConnectedUsersDisplay() {
-  const { ConnectedUsers } = require('react-together')
-  return <ConnectedUsers maxAvatars={5} className="flex items-center space-x-2" />
+  const connectedUsers = useConnectedUsers() as ConnectedUser[]
+  const isTogether = useIsTogether()
+
+  if (!isTogether || !connectedUsers || connectedUsers.length === 0) return null
+  console.log({ connectedUsers })
+  return (
+    <div className="flex items-center space-x-3">
+      <div className="flex -space-x-2">
+        {connectedUsers.slice(0, 3).map((user) => (
+          <div
+            key={user.userId}
+            className="w-8 h-8 rounded-full bg-gradient-primary ring-2 ring-background flex items-center justify-center text-xs font-semibold text-white"
+            title={user.nickname || user.userId}
+          >
+            {(user.nickname || user.userId || 'U').charAt(0).toUpperCase()}
+          </div>
+        ))}
+        {connectedUsers.length > 3 && (
+          <div className="w-8 h-8 rounded-full bg-surface ring-2 ring-background flex items-center justify-center text-xs text-text-muted">
+            +{connectedUsers.length - 3}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-green-400 rounded-full pulse-glow"></div>
+        <span className="text-sm text-text-muted">
+          {connectedUsers.length} online
+        </span>
+      </div>
+    </div>
+  )
 }
 
-function SessionControls() {
-  const { SessionManager } = require('react-together')
+function SessionControls({ username }: { username: string }) {
+  const joinUrl = useJoinUrl() as string | null
+  const leaveSession = useLeaveSession()
+  const isTogether = useIsTogether()
+  const [showDropdown, setShowDropdown] = useState(false)
+
+  const [myNickname, setMyNickname] = useNicknames()
+
+  useEffect(() => {
+    if (username && isTogether && myNickname !== username) {
+      setMyNickname(username)
+    }
+  }, [username, isTogether, myNickname, setMyNickname])
+
+  if (!isTogether) return null
+
+  const copyJoinUrl = async () => {
+    if (joinUrl && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(joinUrl)
+        // You could add a toast notification here
+      } catch (err) {
+        console.error('Failed to copy URL:', err)
+      }
+    }
+  }
+
+  const handleLeaveSession = () => {
+    if (leaveSession) {
+      leaveSession()
+    }
+    setShowDropdown(false)
+  }
+
   return (
-    <SessionManager className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
-      <Settings className="h-4 w-4" />
-      Session
-    </SessionManager>
+    <div className="relative">
+      <button
+        onClick={() => setShowDropdown(!showDropdown)}
+        className="btn-secondary flex items-center space-x-2"
+      >
+        <Settings className="w-4 h-4" />
+        <span>Session</span>
+      </button>
+
+      {showDropdown && (
+        <div className="absolute right-0 top-full mt-2 w-64 glass-surface rounded-xl p-4 border border-border scale-in">
+          <div className="space-y-3">
+            <button
+              onClick={copyJoinUrl}
+              className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors text-sm"
+              disabled={!joinUrl}
+            >
+              📋 Copy invite link
+            </button>
+            <button
+              onClick={handleLeaveSession}
+              className="w-full text-left p-2 rounded-lg hover:bg-surface-hover transition-colors text-sm text-red-400 flex items-center space-x-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Leave session</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

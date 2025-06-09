@@ -1,34 +1,35 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, Gamepad2, Trophy, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Gamepad2, Trophy, RotateCcw, Users } from 'lucide-react'
+import { useIsTogether, useMyId, useConnectedUsers, useStateTogether } from 'react-together'
+
+interface ConnectedUser {
+  userId: string
+  nickname?: string
+}
+
+type Player = 'X' | 'O'
+type GameStatus = 'waiting' | 'playing' | 'finished'
+type Winner = Player | 'tie' | null
 
 export default function GamePage() {
-  const { 
-    useStateTogether, 
-    useStateTogetherWithPerUserValues,
-    useFunctionTogether,
-    useConnectedUsers,
-    useMyId,
-    useIsTogether 
-  } = require('react-together')
-  
   const isTogether = useIsTogether()
   const myId = useMyId()
-  const connectedUsers = useConnectedUsers()
+  const connectedUsers = useConnectedUsers() as ConnectedUser[]
 
-  // Game state
-  const [gameBoard, setGameBoard] = useStateTogether('game-board', Array(9).fill(null))
-  const [currentPlayer, setCurrentPlayer] = useStateTogether('current-player', 'X')
-  const [gameStatus, setGameStatus] = useStateTogether('game-status', 'waiting') // waiting, playing, finished
-  const [winner, setWinner] = useStateTogether('winner', null)
-  
-  // Player assignments
-  const [playerX, setPlayerX] = useStateTogether('player-x', null)
-  const [playerO, setPlayerO] = useStateTogether('player-o', null)
-  
-  // Player scores
-  const [scores, setScores] = useStateTogether('scores', {})
+  // Game state with proper typing
+  const [gameBoard, setGameBoard] = useStateTogether('game-board', Array(9).fill(null) as (Player | null)[])
+  const [currentPlayer, setCurrentPlayer] = useStateTogether('current-player', 'X' as Player)
+  const [gameStatus, setGameStatus] = useStateTogether('game-status', 'waiting' as GameStatus)
+  const [winner, setWinner] = useStateTogether('winner', null as Winner)
+
+  // Player assignments with proper typing
+  const [playerX, setPlayerX] = useStateTogether('player-x', null as string | null)
+  const [playerO, setPlayerO] = useStateTogether('player-o', null as string | null)
+
+  // Player scores with proper typing
+  const [scores, setScores] = useStateTogether('scores', {} as Record<string, number>)
 
   if (!isTogether) {
     return (
@@ -44,24 +45,24 @@ export default function GamePage() {
     )
   }
 
-  const checkWinner = (board: any[]) => {
+  const checkWinner = (board: (Player | null)[]): Winner => {
     const lines = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
       [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
       [0, 4, 8], [2, 4, 6] // diagonals
     ]
-    
+
     for (let line of lines) {
       const [a, b, c] = line
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return board[a]
       }
     }
-    
+
     if (board.every(cell => cell !== null)) {
       return 'tie'
     }
-    
+
     return null
   }
 
@@ -77,27 +78,31 @@ export default function GamePage() {
     if (gameWinner) {
       setWinner(gameWinner)
       setGameStatus('finished')
-      
-      // Update scores
+
+      // Update scores - fix the type error by checking winnerId is not null
       if (gameWinner !== 'tie') {
         const winnerId = gameWinner === 'X' ? playerX : playerO
-        setScores(prev => ({
-          ...prev,
-          [winnerId]: (prev[winnerId] || 0) + 1
-        }))
+        if (winnerId) {
+          setScores(prev => ({
+            ...prev,
+            [winnerId]: (prev[winnerId] || 0) + 1
+          }))
+        }
       }
     } else {
       setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
     }
   }
 
-  const joinAsPlayer = (symbol: 'X' | 'O') => {
+  const joinAsPlayer = (symbol: Player) => {
+    if (!myId) return
+    
     if (symbol === 'X' && !playerX) {
       setPlayerX(myId)
     } else if (symbol === 'O' && !playerO) {
       setPlayerO(myId)
     }
-    
+
     if (playerX && playerO && gameStatus === 'waiting') {
       setGameStatus('playing')
     }
@@ -118,7 +123,8 @@ export default function GamePage() {
     setGameStatus('waiting')
   }
 
-  const getUserNickname = (userId: string) => {
+  const getUserNickname = (userId: string | null): string => {
+    if (!userId) return 'Unknown'
     const user = connectedUsers.find(u => u.userId === userId)
     return user?.nickname || userId
   }
@@ -128,8 +134,8 @@ export default function GamePage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-8">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center text-blue-600 hover:text-blue-700 mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -184,11 +190,11 @@ export default function GamePage() {
                   <p className="text-center text-gray-900">
                     {winner === 'tie' ? (
                       <span className="text-yellow-600 font-bold">It's a tie! 🤝</span>
-                    ) : (
+                    ) : winner ? (
                       <span className="text-green-600 font-bold">
                         {winner} wins! 🎉 ({getUserNickname(winner === 'X' ? playerX : playerO)})
                       </span>
-                    )}
+                    ) : null}
                   </p>
                 )}
               </div>
@@ -203,12 +209,12 @@ export default function GamePage() {
                       w-20 h-20 border-2 border-gray-300 rounded-lg text-2xl font-bold
                       ${cell ? 'bg-gray-100' : 'bg-white hover:bg-gray-50'}
                       ${cell === 'X' ? 'text-blue-600' : 'text-red-600'}
-                      ${gameStatus === 'playing' && !cell && 
+                      ${gameStatus === 'playing' && !cell &&
                         ((currentPlayer === 'X' && myId === playerX) || (currentPlayer === 'O' && myId === playerO))
                         ? 'cursor-pointer' : 'cursor-not-allowed'}
                     `}
-                    disabled={!!cell || gameStatus !== 'playing' || 
-                      (currentPlayer === 'X' && myId !== playerX) || 
+                    disabled={!!cell || gameStatus !== 'playing' ||
+                      (currentPlayer === 'X' && myId !== playerX) ||
                       (currentPlayer === 'O' && myId !== playerO)}
                   >
                     {cell}
@@ -223,7 +229,7 @@ export default function GamePage() {
             {/* Player Assignment */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Players</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -285,11 +291,11 @@ export default function GamePage() {
                 <Trophy className="h-5 w-5 text-yellow-500 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900">Scoreboard</h3>
               </div>
-              
+
               {Object.keys(scores).length > 0 ? (
                 <div className="space-y-2">
                   {Object.entries(scores)
-                    .sort(([,a], [,b]) => (b as number) - (a as number))
+                    .sort(([, a], [, b]) => (b as number) - (a as number))
                     .map(([userId, score]) => (
                       <div key={userId} className="flex justify-between items-center">
                         <span className="text-gray-900">{getUserNickname(userId)}</span>

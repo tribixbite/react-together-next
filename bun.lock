@@ -10,6 +10,7 @@
         "@types/react-dom": "^19",
         "lucide-react": "^0.263.1",
         "next": "latest",
+        "postcss": "^8.5.4",
         "react": "^19",
         "react-dom": "^19",
         "react-together": "latest",

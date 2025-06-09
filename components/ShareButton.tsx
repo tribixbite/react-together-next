@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Share2, Copy, Check, ExternalLink } from 'lucide-react'
+import { useJoinUrl, useIsTogether } from 'react-together'
 
 interface ShareButtonProps {
   className?: string
@@ -9,8 +10,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ className = '', variant = 'button' }: ShareButtonProps) {
-  const { useJoinUrl, useIsTogether } = require('react-together')
-  const joinUrl = useJoinUrl()
+  const joinUrl = useJoinUrl() as string | null
   const isTogether = useIsTogether()
   const [copied, setCopied] = useState(false)
 
@@ -89,8 +89,7 @@ export function ShareButton({ className = '', variant = 'button' }: ShareButtonP
 }
 
 export function ShareableURL({ className = '' }: { className?: string }) {
-  const { useJoinUrl, useIsTogether } = require('react-together')
-  const joinUrl = useJoinUrl()
+  const joinUrl = useJoinUrl() as string | null
   const isTogether = useIsTogether()
   const [copied, setCopied] = useState(false)
 
