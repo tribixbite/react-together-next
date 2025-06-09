@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import { ArrowLeft, FileText, Save, RotateCcw, BarChart3, Users } from 'lucide-react'
-import { useCallback } from 'react'
+import { useRef } from 'react'
 import {
   useStateTogether,
   useStateTogetherWithPerUserValues,
-  useFunctionTogether,
   useConnectedUsers,
   useMyId,
   useIsTogether
@@ -18,6 +17,10 @@ export default function EditorPage() {
   const isTogether = useIsTogether()
   const myId = useMyId()
   const connectedUsers = useConnectedUsers()
+
+  // Refs for throttling/debouncing
+  const lastActivityTime = useRef(0)
+  const lastCursorUpdate = useRef(0)
 
   // Shared document content
   const [documentContent, setDocumentContent] = useStateTogether('document-content',
@@ -35,10 +38,11 @@ export default function EditorPage() {
   // Activity feed
   const [activityFeed, setActivityFeed] = useStateTogether('activity-feed', [] as any[])
 
-  // Add activity function
-  const addActivity = useFunctionTogether('add-activity', useCallback((activity: any) => {
+  // Helper function to add activity directly
+  const addActivity = (activity: any) => {
+    console.log('Adding activity:', activity) // Debug log
     setActivityFeed((prev: any[]) => [activity, ...prev.slice(0, 9)]) // Keep last 10 activities
-  }, [setActivityFeed]))
+  }
 
   if (!isTogether) {
     return (
@@ -54,6 +58,8 @@ export default function EditorPage() {
     )
   }
 
+  console.log('Current activity feed:', activityFeed) // Debug log
+
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value
     const cursorPos = e.target.selectionStart
@@ -61,32 +67,47 @@ export default function EditorPage() {
     setDocumentContent(newContent)
     setMyCursorPosition(cursorPos)
 
-    // Add activity
-    const user = connectedUsers.find(u => u.userId === myId)
-    addActivity({
-      id: Date.now(),
-      userId: myId,
-      userName: user?.nickname || 'Unknown',
-      action: 'edited',
-      timestamp: Date.now()
-    })
+    // Add activity for content changes - less aggressive debouncing
+    const now = Date.now()
+    if (now - lastActivityTime.current > 1000) { // Reduced from 2000ms to 1000ms
+      const user = connectedUsers.find(u => u.userId === myId)
+      addActivity({
+        id: now,
+        userId: myId,
+        userName: user?.nickname || user?.userId || 'Unknown',
+        action: 'edited',
+        timestamp: now
+      })
+      lastActivityTime.current = now
+    }
   }
 
   const handleCursorChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMyCursorPosition(e.target.selectionStart)
+    // Throttle cursor updates to avoid rate limiting
+    const now = Date.now()
+    if (now - lastCursorUpdate.current > 500) {
+      setMyCursorPosition(e.target.selectionStart)
+      lastCursorUpdate.current = now
+    }
   }
 
   const handleCursorPosition = (e: any) => {
-    setMyCursorPosition(e.target.selectionStart)
+    // Throttle cursor updates to avoid rate limiting
+    const now = Date.now()
+    if (now - lastCursorUpdate.current > 500) {
+      setMyCursorPosition(e.target.selectionStart)
+      lastCursorUpdate.current = now
+    }
   }
 
   const saveDocument = () => {
     setLastSaved(Date.now())
     const user = connectedUsers.find(u => u.userId === myId)
+    // Immediate activity for save action
     addActivity({
       id: Date.now(),
       userId: myId,
-      userName: user?.nickname || 'Unknown',
+      userName: user?.nickname || user?.userId || 'Unknown',
       action: 'saved',
       timestamp: Date.now()
     })
@@ -95,15 +116,19 @@ export default function EditorPage() {
   const resetDocument = () => {
     setDocumentContent('# New Document\n\nStart writing your collaborative document here...\n\n')
     setDocumentTitle('Untitled Document')
-    setActivityFeed([])
     const user = connectedUsers.find(u => u.userId === myId)
+    // Immediate activity for reset action
     addActivity({
       id: Date.now(),
       userId: myId,
-      userName: user?.nickname || 'Unknown',
+      userName: user?.nickname || user?.userId || 'Unknown',
       action: 'reset',
       timestamp: Date.now()
     })
+    // Clear activity feed after adding reset activity
+    setTimeout(() => {
+      setActivityFeed([])
+    }, 100)
   }
 
   const getUserNickname = (userId: string) => {
