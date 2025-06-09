@@ -1,1 +1,229 @@
-# 🌟 Next.js + React Together - Dark Edition\n\n**A stunning, dark-themed starter template for building collaborative, real-time applications with React Together, Next.js 15, React 19, and Tailwind CSS 4.**\n\n![Dark Theme](https://img.shields.io/badge/Theme-Dark-8B5CF6)\n![React 19](https://img.shields.io/badge/React-19-61DAFB)\n![Next.js 15](https://img.shields.io/badge/Next.js-15-000000)\n![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4.0%20Alpha-06B6D4)\n![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)\n\n## ✨ **What Makes This Special**\n\nThis isn't just another starter template. It's a **meticulously crafted, production-ready foundation** that showcases the future of collaborative web applications with:\n\n- 🎨 **Stunning Dark UI** - Glass morphism, gradients, and smooth animations\n- ⚡ **Cutting-Edge Tech** - React 19, Next.js 15, Tailwind CSS 4 Alpha\n- 🔄 **Live Collaboration** - Real-time state sync, cursors, and presence\n- 🎯 **Interactive Demos** - See collaboration in action immediately\n- 📱 **Responsive Design** - Beautiful on all devices\n- 🚀 **Production Ready** - TypeScript, optimizations, and best practices\n\n## 🎬 **See It In Action**\n\n```bash\n# Quick start - just 3 commands\ngit clone <this-repo>\ncd next-react-together\nnpm install && npm run dev\n```\n\n**Then open multiple browser tabs to see the magic! ✨**\n\n## 🎯 **Live Interactive Demos**\n\nThe app includes **4 stunning collaborative demos** that work out of the box:\n\n### 🔢 **Live Counter**\n- Synchronized state across all users\n- Smooth animations and visual feedback\n- Real-time conflict resolution\n\n### 💬 **Live Chat**\n- Instant messaging with user identification\n- Message history and real-time updates\n- Beautiful message bubbles with animations\n\n### 🖱️ **Live Cursors**\n- Real-time cursor tracking\n- Smooth cursor animations\n- User identification and colors\n\n### 👥 **User Presence**\n- See who's online in real-time\n- User avatars with unique colors\n- Connection status indicators\n\n## 🎨 **Design System**\n\n### **Dark Theme Perfection**\n```css\n/* Sophisticated color palette */\n--color-background: #0a0a0a;\n--color-surface: #141414;\n--color-primary: #8b5cf6;\n--color-accent: #06b6d4;\n--gradient-primary: linear-gradient(135deg, #8b5cf6, #06b6d4);\n```\n\n### **Glass Morphism Effects**\n- Backdrop blur for modern aesthetics\n- Subtle transparency and borders\n- Layered depth with shadows\n\n### **Smooth Animations**\n- 60fps performance optimized\n- Micro-interactions on hover/focus\n- Entrance animations with staggered timing\n- Pulse effects for live elements\n\n### **Typography Excellence**\n- Inter font for perfect readability\n- Gradient text effects\n- Carefully crafted hierarchy\n- Responsive scaling\n\n## 🚀 **Tech Stack Highlights**\n\n### **React 19 Features**\n- ⚡ **React Compiler** - Automatic optimizations\n- 🔄 **Enhanced Suspense** - Better async handling\n- 🎯 **Improved Performance** - Reduced re-renders\n- 📦 **Latest APIs** - Cutting-edge React features\n\n### **Tailwind CSS 4 Benefits**\n- 🎨 **CSS-based Config** - No more JavaScript config\n- 📦 **Smaller Bundles** - More efficient CSS generation\n- ⚡ **Faster Builds** - Improved performance\n- 🎭 **Native CSS Features** - CSS custom properties\n\n### **React Together Magic**\n- 🔄 **Real-time State Sync** - `useStateTogether`\n- 👥 **User Presence** - `useConnectedUsers`\n- 🖱️ **Live Cursors** - `useCursors`\n- 💬 **Built-in Chat** - `useChat`\n- 🎯 **Hover Tracking** - `useHoveringUsers`\n\n## 📁 **Project Structure**\n\n```\nnext-react-together/\n├── app/\n│   ├── globals.css         # 🎨 Complete dark theme system\n│   ├── layout.tsx          # 🌟 Glass morphism navigation\n│   └── page.tsx            # 🎯 Interactive demo homepage\n├── components/\n│   ├── LiveDemo.tsx        # 🔄 Reusable collaboration components\n│   ├── ConnectionStatus.tsx # 📡 Connection indicators\n│   ├── ShareButton.tsx     # 🔗 Session sharing utilities\n│   └── UserAvatar.tsx      # 👤 User profile components\n├── lib/\n│   └── utils.ts            # 🛠️ Helper functions\n└── docs/                   # 📚 Comprehensive documentation\n```\n\n## 🎯 **Quick Start Guide**\n\n### **1. Get Your API Key**\nVisit [multisynq.io/coder](https://multisynq.io/coder) for a free API key (no credit card required)\n\n### **2. Install & Run**\n```bash\nnpm install\nnpm run dev\n```\n\n### **3. Enter API Key**\nThe beautiful onboarding flow will guide you through setup\n\n### **4. Experience Collaboration**\n- Open multiple browser tabs\n- Share your session URL with others\n- Watch real-time collaboration unfold!\n\n## 🔧 **Customization Made Easy**\n\n### **Theme Customization**\n```css\n/* app/globals.css */\n@theme {\n  --color-primary: #your-brand-color;\n  --color-accent: #your-accent-color;\n  \n  @media (prefers-color-scheme: dark) {\n    --color-primary: #your-dark-primary;\n  }\n}\n```\n\n### **Component Customization**\n```tsx\n// Use the built-in components\nimport { LiveDemoWrapper, CollaborativeButton } from '@/components'\n\nfunction MyFeature() {\n  const [value, setValue] = useStateTogether('my-key', 0)\n  \n  return (\n    <LiveDemoWrapper title=\"My Feature\" isConnected={true}>\n      <CollaborativeButton \n        onClick={() => setValue(v => v + 1)}\n        variant=\"primary\"\n      >\n        Count: {value}\n      </CollaborativeButton>\n    </LiveDemoWrapper>\n  )\n}\n```\n\n## 🌟 **Features That Impress**\n\n### **🎨 Visual Excellence**\n- Sophisticated dark theme with perfect contrast\n- Glass morphism effects throughout\n- Smooth animations and transitions\n- Responsive design that works everywhere\n\n### **⚡ Performance Optimized**\n- React 19 Compiler for automatic optimizations\n- CSS custom properties for efficient theming\n- Optimized bundle size with Tailwind CSS 4\n- 60fps animations with GPU acceleration\n\n### **🔄 Collaboration Features**\n- Real-time state synchronization\n- Live cursor tracking with smooth animations\n- User presence and activity indicators\n- Built-in chat with message history\n- Session sharing and management\n\n### **🛠️ Developer Experience**\n- TypeScript for type safety\n- Hot reload with instant updates\n- Comprehensive component library\n- Extensive documentation\n- Production-ready patterns\n\n## 📚 **Learn & Explore**\n\n### **React Together Resources**\n- [📖 Official Documentation](https://react-together.dev)\n- [🐙 GitHub Repository](https://github.com/multisynq/react-together)\n- [💬 Discord Community](https://multisynq.io/discord)\n\n### **Advanced Examples**\n- [📝 Collaborative Text Editor](/editor)\n- [🎮 Multiplayer Tic-Tac-Toe](/game)\n- [🖱️ Interactive Cursor Playground](/cursors)\n- [👥 User Presence Tracking](/presence)\n\n## 🚀 **Deploy Anywhere**\n\nThis template works seamlessly with:\n- **Vercel** (recommended) - One-click deployment\n- **Netlify** - Full Next.js support\n- **Railway** - Automatic detection\n- **Docker** - Production containers\n\n```bash\n# Deploy to Vercel\nnpx vercel --prod\n\n# Or build for any platform\nnpm run build\n```\n\n## 🎯 **Perfect For**\n\n- 🚀 **Rapid Prototyping** - Get collaborative features instantly\n- 📚 **Learning** - Understand real-time collaboration patterns\n- 🏢 **Production Apps** - Battle-tested foundation\n- 🎓 **Education** - Teaching collaborative development\n- 🏆 **Hackathons** - Impressive demos in minutes\n\n## 🤝 **Contributing**\n\nWe welcome contributions! Whether it's:\n- 🐛 Bug fixes\n- ✨ New features\n- 📚 Documentation improvements\n- 🎨 Design enhancements\n\n## 📄 **License**\n\nMIT License - feel free to use this in your projects!\n\n---\n\n<div align=\"center\">\n\n**🌟 Star this repo if you love it! 🌟**\n\n*Built with ❤️ using React Together*\n\n[🚀 **Get Started Now**](#quick-start-guide) • [📖 **Documentation**](https://react-together.dev) • [💬 **Community**](https://multisynq.io/discord)\n\n</div>\n\n---\n\n## 🎉 **What's Next?**\n\nWith this foundation, you can build:\n- 📝 Collaborative document editors\n- 🎮 Multiplayer games\n- 🎨 Design collaboration tools\n- 📊 Real-time dashboards\n- 🎪 Interactive presentations\n- 🤝 Team collaboration apps\n\n**The possibilities are endless when everyone can collaborate in real-time! ✨**\n
+# 🌟 React Together Next.js App
+
+**A modern, real-time collaborative application built with React Together, Next.js 15, React 19, and Tailwind CSS.**
+
+![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss)
+
+## ✨ Features
+
+- 🔄 **Real-time Collaboration** - Multiple users can interact simultaneously
+- 🎨 **Modern Dark Theme** - Beautiful glass morphism design
+- 🖱️ **Live Cursors** - See other users' mouse movements in real-time
+- 💬 **Live Chat** - Built-in messaging system
+- 🎯 **Interactive Demos** - Canvas painting, reactions, voting, and more
+- 📱 **Responsive Design** - Works on all devices
+- 🚀 **Production Ready** - TypeScript, optimizations, and best practices
+
+## 🚀 Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/tribixbite/react-together-next.git
+   cd react-together-next
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Add your React Together API key to .env
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open multiple browser tabs**
+   Visit `http://localhost:3000` in multiple tabs to see real-time collaboration!
+
+## 🎯 Live Demo
+
+🌐 **[View Live Demo](https://tribixbite.github.io/react-together-next/)**
+
+Try opening the demo in multiple browser windows to experience real-time collaboration.
+
+## 📱 App Features
+
+### 🏠 Homepage
+- Live counter with real-time synchronization
+- Interactive chat with message history
+- User presence indicators
+- Session sharing capabilities
+
+### 🎪 Showcase Page
+- **Collaborative Canvas** - Paint pixels together in real-time
+- **Live Reactions** - Share emoji reactions with other users
+- **Live Cursors Demo** - See cursor movements in a demo area
+- **Team Voting** - Vote on options and see live results
+- **Real-time Metrics** - Session statistics and user counts
+- **Live Activity Feed** - Track all user interactions
+
+### 🎮 Additional Pages
+- **Chat** - Dedicated messaging interface
+- **Counter** - Simple collaborative counter
+- **Game** - Tic-tac-toe with real-time gameplay
+- **Presence** - User presence and activity tracking
+
+## 🛠️ Tech Stack
+
+- **[Next.js 15](https://nextjs.org/)** - React framework with App Router
+- **[React 19](https://react.dev/)** - Latest React with concurrent features
+- **[React Together](https://react-together.dev/)** - Real-time collaboration hooks
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first styling
+- **[Lucide React](https://lucide.dev/)** - Beautiful icons
+
+## 🎨 Key Components
+
+### Real-time State Management
+```tsx
+import { useStateTogether } from 'react-together'
+
+function Counter() {
+  const [count, setCount] = useStateTogether('counter', 0)
+  
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  )
+}
+```
+
+### Live Cursors
+```tsx
+import { useCursors } from 'react-together'
+
+function CursorDemo() {
+  const { allCursors } = useCursors({ deleteOnLeave: true })
+  
+  return (
+    <div className="relative">
+      {Object.entries(allCursors).map(([userId, cursor]) => (
+        <div
+          key={userId}
+          className="absolute w-2 h-2 bg-emerald-500 rounded-full"
+          style={{
+            left: `${cursor.percentX * 100}%`,
+            top: `${cursor.percentY * 100}%`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+### User Presence
+```tsx
+import { useConnectedUsers } from 'react-together'
+
+function UserList() {
+  const connectedUsers = useConnectedUsers()
+  
+  return (
+    <div>
+      {connectedUsers.map(user => (
+        <div key={user.userId}>
+          {user.nickname || user.userId}
+          {user.isYou && ' (You)'}
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+## 📁 Project Structure
+
+```
+react-together-next/
+├── app/                    # Next.js app directory
+│   ├── chat/              # Chat page
+│   ├── counter/           # Counter demo
+│   ├── game/              # Tic-tac-toe game
+│   ├── presence/          # Presence tracking
+│   ├── showcase/          # Main showcase page
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Homepage
+├── components/            # React components
+│   ├── ReactTogetherWrapper.tsx
+│   └── SessionSettings.tsx
+├── lib/                   # Utilities
+└── public/               # Static assets
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env.local` file with your React Together credentials:
+
+```env
+NEXT_PUBLIC_DEFAULT_APP_ID=your-app-id
+NEXT_PUBLIC_MULTISYNQ_API_KEY=your-api-key
+NEXT_PUBLIC_DEFAULT_SESSION_NAME=your-session-name
+NEXT_PUBLIC_DEFAULT_SESSION_PASSWORD=your-password
+```
+
+Get your API key from [React Together](https://react-together.dev/).
+
+## 🚀 Deployment
+
+This app is automatically deployed to GitHub Pages using GitHub Actions.
+
+### Manual Deployment
+
+You can also deploy to other platforms:
+
+**Vercel:**
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+**Netlify:**
+```bash
+npm run build
+# Upload the `out` folder to Netlify
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [React Together](https://react-together.dev/) for the amazing real-time collaboration framework
+- [Multisynq](https://multisynq.io/) for the infrastructure
+- [Next.js](https://nextjs.org/) team for the excellent framework
+- [Tailwind CSS](https://tailwindcss.com/) for the styling system
+
+---
+
+<div align="center">
+
+**🌟 Star this repo if you found it helpful! 🌟**
+
+[🚀 Live Demo](https://tribixbite.github.io/react-together-next/) • [📖 React Together Docs](https://react-together.dev/) • [💬 Discord](https://multisynq.io/discord)
+
+</div>
